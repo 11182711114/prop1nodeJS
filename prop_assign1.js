@@ -35,11 +35,11 @@ var myObject = {
         }
 
     },
-    addPrototype: function(prototype) {
+    addPrototype: function(prototype) { 
         if (!this.checkIfPrototypeExistsInChain(prototype))
             this.__proto__ = prototype;
         else
-            throw Error("Prototype exists in the inheritance chain");
+            throw new Error("Prototype exists in the inheritance chain");
     },
     // since all objects are key value pairs how do you even check if the objects are the same? 
     // iterate through properties of object?
@@ -89,9 +89,10 @@ console.log("should print ’func0: hello’ ->", result);
 /*
 * Preventing circular inheritance
 */
-
 obj0 = myObject.create(null);
-obj0.iden = 0;
 obj1 = myObject.create([obj0]);
-obj1.iden = 1;
-obj0.addPrototype(obj1);
+try {
+    obj0.addPrototype(obj1);
+} catch (error) {
+    console.error(error); // Should be printed as "Error: Prototype exists in the inheritance chain"
+}
