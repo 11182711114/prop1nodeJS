@@ -11,6 +11,7 @@ var myObject = {
         if (prototypeList == null)
             return newObj;
         let currentPrototypeLevel = newObj;
+        //fix naming...
         prototypeList.forEach(function(prototype, index, array) {
             if (currentPrototypeLevel != null) {
                 if (currentPrototypeLevel.__proto__ != this.__proto__) {
