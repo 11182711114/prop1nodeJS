@@ -13,16 +13,13 @@ var myObject = {
         let currentPrototypeLevel = newObj;
         //fix naming...
         prototypeList.forEach(function(prototype, index, array) {
-            if (currentPrototypeLevel != null) {
-                if (currentPrototypeLevel.__proto__ != this.__proto__) {
-                    for (var proto = currentPrototypeLevel.__proto__; proto.__proto__.__proto__ != null; proto = proto.__proto__) {
-                        currentPrototypeLevel = proto;
-                    }
-                } else {
-                    currentPrototypeLevel.__proto__ = prototype;
-                    currentPrototypeLevel = prototype;
+            if (currentPrototypeLevel.__proto__ != this.__proto__) {
+                for (let proto = currentPrototypeLevel.__proto__; proto.__proto__.__proto__ != null; proto = proto.__proto__) {
+                    currentPrototypeLevel = proto;
                 }
-            
+            } else {
+                currentPrototypeLevel.__proto__ = prototype;
+                currentPrototypeLevel = prototype;
             }
         }, this);
         return newObj;
@@ -93,6 +90,35 @@ obj0 = myObject.create(null);
 obj1 = myObject.create([obj0]);
 try {
     obj0.addPrototype(obj1);
+    console.log("Failed to detect circular inheritence: 1");
 } catch (error) {
-    console.error(error); // Should be printed as "Error: Prototype exists in the inheritance chain"
+    console.log("Detected circular logic"); // Should be printed as "Error: Prototype exists in the inheritance chain"
+}
+
+/*
+*   Multiple prototypes circular inheritence
+*/
+obj0 = myObject.create(null);
+obj1 = myObject.create([obj0]);
+obj2 = myObject.create([obj1]);
+obj3 = myObject.create([obj2]);
+try {
+    obj0.addPrototype(obj3);
+    console.log("Failed to detect circular inheritence: 2");
+} catch (error) {
+    console.log("Detected circular logic"); // Should be printed as "Error: Prototype exists in the inheritance chain"
+}
+
+/*
+* Middle circular inheritence
+*/
+obj0 = myObject.create(null);
+obj1 = myObject.create([obj0]);
+obj2 = myObject.create([obj1]); 
+obj3 = myObject.create([obj2, obj1]);
+try {
+    obj0.addPrototype(obj3);
+    console.log("Failed to detect circular inheritence: 3");
+} catch (error) {
+    console.log("Detected circular logic"); // Should be printed as "Error: Prototype exists in the inheritance chain"
 }
