@@ -1,22 +1,28 @@
 
 // create into topmost __proto__ to prevent the function 
-// from being saved in memory for every object of myObject
+// from being saved in memory for every object created by myObject
 var myObject = {
-
     create: function(prototypeList) {
         let newObj = {};
+        // Necessary? This is bad since these functions will now be stored in memory for all instances of created objects
+        // Alternative? Chuck them into __proto__, since we are overriding protos is this reliable? 
+        //      Should be since whatever chain you make it will end with the original __proto__
         newObj.call = this.call;
         newObj.addPrototype = this.addPrototype;
-        newObj.checkIfPrototypeExistsInChain = this.checkIfPrototypeExistsInChain;
+        newObj.checkIfPrototypeExistsInChain = this.checkObjectExistsInPrototypesChain;
         if (prototypeList == null)
             return newObj;
         let currentPrototypeLevel = newObj;
         //fix naming...
         prototypeList.forEach(function(prototype, index, array) {
+            // if the object already has prototypes that is not the original(i.e. myObject.__proto__) 
             if (currentPrototypeLevel.__proto__ != this.__proto__) {
+                //iterate through the prototypes and add the them at the top of the chain to give them "lowest priority" lookup
                 for (let proto = currentPrototypeLevel.__proto__; proto.__proto__.__proto__ != null; proto = proto.__proto__) {
                     currentPrototypeLevel = proto;
                 }
+            // if the object does not have other prototypes just add prototype from prototypeList.forEach as __proto__ 
+            // and set currentPrototypeLevel to prototype to advance in the chain
             } else {
                 currentPrototypeLevel.__proto__ = prototype;
                 currentPrototypeLevel = prototype;
@@ -24,23 +30,25 @@ var myObject = {
         }, this);
         return newObj;
     },
-    // TODO check for method overloading on parameters
+    // Call overshadowing
     call: function(funcName, parameters) {
+        // Iterate through the prototype chain starting from the called object until default proto is reached.
         for (var proto = this; proto.__proto__ != null; proto = proto.__proto__) {
+            // if proto has the property funcName then we call the function with .apply(this, parameters) where this is the context, i.e. the original called object
             if (proto.hasOwnProperty(funcName))
                 return proto[funcName].apply(this,parameters);
         }
 
     },
+    // Add prototype to called, replaces all previous inheritence.
     addPrototype: function(prototype) { 
-        if (!this.checkIfPrototypeExistsInChain(prototype))
+        if (!this.checkObjectExistsInPrototypesChain(prototype))
             this.__proto__ = prototype;
         else
             throw new Error("Prototype exists in the inheritance chain");
     },
-    // since all objects are key value pairs how do you even check if the objects are the same? 
-    // iterate through properties of object?
-    checkIfPrototypeExistsInChain: function(prototype) {
+    // Check if the called object is anywhere in the prototypes prototype chain. 
+    checkObjectExistsInPrototypesChain: function(prototype) {
         for (var proto = prototype; proto.__proto__ != null; proto = proto.__proto__) {
             if (proto === this)
                return true;
@@ -49,6 +57,13 @@ var myObject = {
     }
 
 }
+
+
+/*
+*******************************************
+*              TESTS                      *
+*******************************************
+*/
 
 /*
 * Example
