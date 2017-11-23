@@ -1,0 +1,1 @@
+Basic implementation of inheritance and classes in Nodejs
