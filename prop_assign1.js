@@ -6,7 +6,9 @@ var myObject = {
         var newObj = {};
         // Necessary? This is bad since these functions will now be stored in memory for all instances of created objects
         // Alternative? Chuck them into __proto__, since we are overriding protos is this reliable? 
-        //      Should be since whatever chain you make it will end with the original __proto__
+        //      Should be since whatever chain you make it will end with the default __proto__
+        //          But is it wanted that we carry these for all other objects?
+        //              add our own basic common proto for these? (i.e. obj -> inhProto -> ourFunctionProto -> defaultProto -> null)
         newObj.call = this.call;
         newObj.addPrototype = this.addPrototype;
         newObj.checkIfPrototypeExistsInChain = this.checkObjectExistsInPrototypesChain;
@@ -23,16 +25,13 @@ var myObject = {
                     for (let proto = currentPrototypeLevel.__proto__; proto.__proto__ != null; proto = proto.__proto__) {
                         currentPrototypeLevel = proto;
                     }
-                    currentPrototypeLevel.__proto__ = prototype;
-                    currentPrototypeLevel = prototype;
                 // if the object does not have other prototypes just add prototype from prototypeList.forEach as __proto__ 
                 // and set currentPrototypeLevel to prototype to advance in the chain
-                } else {
-                    currentPrototypeLevel.__proto__ = prototype;
-                    currentPrototypeLevel = prototype;
-                }
+                }                
+                currentPrototypeLevel.__proto__ = prototype;
+                currentPrototypeLevel = prototype;
             }
-        }, this);
+        });
         return newObj;
     },
     // Call overshadowing
@@ -43,12 +42,11 @@ var myObject = {
             if (proto.hasOwnProperty(funcName))
                 return proto[funcName].apply(this,parameters);
         }
-
     },
     // Add prototype to called, replaces all previous inheritence.
     addPrototype: function(prototype) { 
         if (!this.checkObjectExistsInPrototypesChain(prototype))
-            this.__proto__ = prototype;
+            this.__proto__ = prototype; // bad, should probably add after the prototypes chain that we are adding??
         else
             throw new Error("Prototype exists in the inheritance chain");
     },
@@ -65,17 +63,15 @@ var myObject = {
 
 
 /*
-¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
-¤%%%%%%%%%%%%%%%%%%%%%%%¤
-¤%@@@@@@@@@@@@@@@@@@@@@%¤
-¤%@###################@%¤
-¤%@#*****************#@%¤
-¤%@#*     TESTS     *#@%¤
-¤%@#*****************#@%¤
-¤%@###################@%¤
-¤%@@@@@@@@@@@@@@@@@@@@@%¤
-¤%%%%%%%%%%%%%%%%%%%%%%%¤
-¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
+            %%%%%%%%%%%%%%%%%%%%%%%
+            %@@@@@@@@@@@@@@@@@@@@@%
+            %@###################@%
+            %@#*****************#@%
+            %@#*     TESTS     *#@%
+            %@#*****************#@%
+            %@###################@%
+            %@@@@@@@@@@@@@@@@@@@@@%
+            %%%%%%%%%%%%%%%%%%%%%%%
 */
 
 /*
@@ -156,7 +152,6 @@ try {
 } catch (error) {
     console.log("\tDetected circular logic: 2"); // Should be printed as "Error: Prototype exists in the inheritance chain"
 }
-
 
 /*
 * Middle circular inheritence
