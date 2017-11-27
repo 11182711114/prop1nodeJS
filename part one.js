@@ -3,7 +3,7 @@
 // from being saved in memory for every object created by myObject
 var myObject = {
     create: function(prototypeList) {
-        var newObj = {};
+        let newObj = {};
         // Necessary? This is bad since these functions will now be stored in memory for all instances of created objects
         // Alternative? Chuck them into __proto__, since we are overriding protos is this reliable? 
         //      Should be since whatever chain you make it will end with the default __proto__
@@ -21,7 +21,7 @@ var myObject = {
                 // if the object already has prototypes that is not the original(i.e. myObject.__proto__) 
                 if (currentPrototypeLevel.__proto__ != this.__proto__) { // TODO: doesnt work properly
                     //iterate through the prototypes and add the them at the top of the chain to give them "lowest priority" lookup
-                    // note: stops on the object before default __proto__ (i.e. proto.__proto__.__proto__ != null)
+                    // note: stops on the object before default __proto__ (i.e. proto.__proto__ != null)
                     for (let proto = currentPrototypeLevel.__proto__; proto.__proto__ != null; proto = proto.__proto__) {
                         currentPrototypeLevel = proto;
                     }
@@ -37,7 +37,7 @@ var myObject = {
     // Call overshadowing
     call: function(funcName, parameters) {
         // Iterate through the prototype chain starting from the called object until default proto is reached.
-        for (var proto = this; proto.__proto__ != null; proto = proto.__proto__) {
+        for (let proto = this; proto.__proto__ != null; proto = proto.__proto__) {
             // if proto has the property funcName then we call the function with .apply(this, parameters) where this is the context, i.e. the original called object
             if (proto.hasOwnProperty(funcName))
                 return proto[funcName].apply(this,parameters);
@@ -46,7 +46,7 @@ var myObject = {
     // Add prototype to called, replaces all previous inheritence.
     addPrototype: function(prototype) { 
         if (!this.checkObjectExistsInPrototypesChain(prototype))
-            this.__proto__ = prototype; // bad, should probably add after the prototypes chain that we are adding??
+            this.__proto__ = prototype; // should probably add after the prototypes chain that we are adding??
         else
             throw new Error("Prototype exists in the inheritance chain");
     },
