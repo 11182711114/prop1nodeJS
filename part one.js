@@ -154,19 +154,3 @@ try {
 } catch (error) {
     console.log("\tDetected circular logic: 2"); // Should be printed as "Error: Prototype exists in the inheritance chain"
 }
-
-/*
-* Middle circular inheritence
-*/
-/*
-obj0 = myObject.create(null);
-obj1 = myObject.create([obj0]);
-obj2 = myObject.create([obj1]); 
-obj3 = myObject.create([obj2, obj1]);
-try {
-    obj0.addPrototype(obj3);
-    console.log("Failed to detect circular inheritence: 3");
-} catch (error) {
-    console.log("\tDetected circular logic"); // Should be printed as "Error: Prototype exists in the inheritance chain"
-}
-*/
