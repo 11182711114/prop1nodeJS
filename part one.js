@@ -12,7 +12,7 @@ var myObject = {
             if (prototype != null) {
 
                 // if the currentPrototype in the iteration has one(or more) prototype(s) that is not this(myObject) i.e. it has a prototype chain of its own 
-                if (currentPrototypeLevel.__proto__ != this) { // TODO: doesnt work properly
+                if (currentPrototypeLevel.__proto__ != this) {
 
                     //iterate through the prototypes and add the them at the top of the chain to give them "lowest priority" lookup
                     // note: stops on the object before default __proto__ (i.e. proto.__proto__ != null)
@@ -43,12 +43,18 @@ var myObject = {
     },
     // Add prototype to called, replaces all previous inheritence.
     addPrototype: function(prototype) { 
-        if (!this.checkObjectExistsInPrototypesChain(prototype))
-            this.__proto__ = prototype; // should probably add after the prototypes chain that we are adding??
+        if (!this.checkObjectExistsInPrototypesChain(prototype)) {
+            let currentPrototypeLevel = this; 
+            for (let proto = currentPrototypeLevel.__proto__; proto.__proto__.__proto__ != null; proto = proto.__proto__) {
+                currentPrototypeLevel = proto;
+            }
+            currentPrototypeLevel.__proto__ = prototype; // should probably add after the prototypes chain that we are adding??
+        }
         else
             throw new Error("Prototype exists in the inheritance chain");
     },
     // Check if the called object is anywhere in the prototypes prototype chain. 
+    // TODO: Do i need to check both the prototypes chain and this since i cant access the object of which this is prototype TO?
     checkObjectExistsInPrototypesChain: function(prototype) {
         for (var proto = prototype; proto.__proto__ != null; proto = proto.__proto__) {
             if (proto === this)
@@ -57,7 +63,7 @@ var myObject = {
         return false;
     }
 
-}
+};
 
 
 /*
@@ -129,12 +135,12 @@ console.log(result);
 */
 obj0 = myObject.create(null);
 obj1 = myObject.create([obj0]);
-console.log("should print 'Detected circular logic' x2")
+console.log("should print ’Detected circular prototype logic’ x2")
 try {
     obj0.addPrototype(obj1);
-    console.log("Failed to detect circular inheritence: 1");
+    console.log("\tFailed to detect circular inheritence: 1");
 } catch (error) {
-    console.log("\tDetected circular logic: 1"); // Should be printed as "Error: Prototype exists in the inheritance chain"
+    console.log("\tDetected circular prototype logic: 1");
 }
 
 /*
@@ -146,7 +152,26 @@ obj2 = myObject.create([obj1]);
 obj3 = myObject.create([obj2]);
 try {
     obj0.addPrototype(obj3);
-    console.log("Failed to detect circular inheritence: 2");
+    console.log("\tFailed to detect circular inheritence: 2");
 } catch (error) {
-    console.log("\tDetected circular logic: 2"); // Should be printed as "Error: Prototype exists in the inheritance chain"
+    console.log("\tDetected circular prototype logic: 2");
+}
+
+console.log("should print ’added prototype’")
+/*
+*   functional addPrototype
+*/
+obj0 = myObject.create(null);
+obj0.ident = 0;
+obj1 = myObject.create([obj0]);
+obj1.ident = 1;
+obj2 = myObject.create([obj1]);
+obj2.ident = 2;
+obj3 = myObject.create([]);
+obj3.ident = 3;
+try {
+    obj0.addPrototype(obj3);
+    console.log("\tadded prototype");
+} catch (error) {
+    console.log("\tdetected circular prototype logic");
 }
