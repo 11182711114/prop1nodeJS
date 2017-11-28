@@ -76,15 +76,11 @@ var myObject = {
 * Example
 */
 var obj0 = myObject.create(null);
-obj0.ident = 0;
 obj0.func = function(arg) { return "func0: " + arg; };
 var obj1 = myObject.create([obj0]);
-obj1.ident = 1;
 var obj2 = myObject.create([]);
-obj2.ident = 2;
 obj2.func = function(arg) { return "func2: " + arg; };
 var obj3 = myObject.create([obj1, obj2]);
-obj3.ident = 3;
 var result = obj3.call("func", ["hello"]);
 console.log("should print ’func0: hello’ ->", result);
 
