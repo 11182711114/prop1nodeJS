@@ -1,37 +1,35 @@
-
-// create into topmost __proto__ to prevent the function 
-// from being saved in memory for every object created by myObject
 var myObject = {
     create: function(prototypeList) {
         let newObj = {};
-        // Necessary? This is bad since these functions will now be stored in memory for all instances of created objects
-        // Alternative? Chuck them into __proto__, since we are overriding protos is this reliable? 
-        //      Should be since whatever chain you make it will end with the default __proto__
-        //          But is it wanted that we carry these for all other objects?
-        //              add our own basic common proto for these? (i.e. obj -> inhProto -> ourFunctionProto -> defaultProto -> null)
-        newObj.call = this.call;
-        newObj.addPrototype = this.addPrototype;
-        newObj.checkIfPrototypeExistsInChain = this.checkObjectExistsInPrototypesChain;
-        if (prototypeList == null)
+        newObj.__proto__ = this;
+
+        if (prototypeList == null) {
             return newObj;
+        }
+
         let currentPrototypeLevel = newObj;
-        //fix naming...
         prototypeList.forEach(function(prototype, index, array) {
             if (prototype != null) {
-                // if the object already has prototypes that is not the original(i.e. myObject.__proto__) 
-                if (currentPrototypeLevel.__proto__ != this.__proto__) { // TODO: doesnt work properly
+
+                // if the currentPrototype in the iteration has one(or more) prototype(s) that is not this(myObject) i.e. it has a prototype chain of its own 
+                if (currentPrototypeLevel.__proto__ != this) { // TODO: doesnt work properly
+
                     //iterate through the prototypes and add the them at the top of the chain to give them "lowest priority" lookup
                     // note: stops on the object before default __proto__ (i.e. proto.__proto__ != null)
-                    for (let proto = currentPrototypeLevel.__proto__; proto.__proto__ != null; proto = proto.__proto__) {
+                    for (let proto = currentPrototypeLevel.__proto__; proto != this; proto = proto.__proto__) {
                         currentPrototypeLevel = proto;
                     }
+
                 // if the object does not have other prototypes just add prototype from prototypeList.forEach as __proto__ 
                 // and set currentPrototypeLevel to prototype to advance in the chain
                 }                
                 currentPrototypeLevel.__proto__ = prototype;
                 currentPrototypeLevel = prototype;
             }
-        });
+        }, this);
+
+        // Add this to the topmost prototype before default proto to inherit functions
+        // currentPrototypeLevel.__proto__ = this;
         return newObj;
     },
     // Call overshadowing
@@ -78,11 +76,15 @@ var myObject = {
 * Example
 */
 var obj0 = myObject.create(null);
+obj0.ident = 0;
 obj0.func = function(arg) { return "func0: " + arg; };
 var obj1 = myObject.create([obj0]);
+obj1.ident = 1;
 var obj2 = myObject.create([]);
+obj2.ident = 2;
 obj2.func = function(arg) { return "func2: " + arg; };
 var obj3 = myObject.create([obj1, obj2]);
+obj3.ident = 3;
 var result = obj3.call("func", ["hello"]);
 console.log("should print ’func0: hello’ ->", result);
 
