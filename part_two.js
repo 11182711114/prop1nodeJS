@@ -4,8 +4,11 @@ var superDuperClass = {
         if (this.hasOwnProperty(funcName))
             return this[funcName].apply(this, param);
 
+        // Fix return -> tail recursion should not be necessary since the return value
+        // is not dependent on the previous stack windows which means that they
+        // should not be saved by the compiler????
         let result = null;
-        __proto__.callTail(funcName, param, result);
+        result = this.__proto__.callTail(funcName, param, result);
         return result;
 
         // let instanceClass = this.__proto__;
@@ -23,13 +26,13 @@ var superDuperClass = {
     },
     callTail: function(funcName, param, result) {
         if (this.hasOwnProperty(funcName)) {
-            result = curClass[funcName].apply(this, parameters);
+           return this[funcName].apply(this, param);
         } else {
             this.superClasses.forEach(function(superClass){
-                superClass.callTail(funcName, param, result)
+                result = superClass.callTail(funcName, param, result)
             }, this);
         }
-        return;
+        return result;
     },
     addSuperClass: function(superClass) {
 
