@@ -1,18 +1,23 @@
 
 var superDuperClass = {
-    call : function() {
+    call: function() {
+
+    },
+    addSuperClass: function() {
 
     }
 };
 
 var createClass = function(className, superClassList) {
-    let newClass = { 
-        name:className, 
-        new:function(){
-            return this.copy();
-        }
+    let newClass = {
+        superClasses: [], 
+        name: className 
     };
 
+    superClassLis.forEach(function(prototype, index, array) {
+        superClasses.push(prototype);
+    }, this);
+    newClass.__proto__ = superDuperClass;
     return newClass;
 };
 
@@ -26,17 +31,17 @@ console.log("new class instance: " + newObj.name);
 
 
 
-// /*
-//             %%%%%%%%%%%%%%%%%%%%%%%
-//             %@@@@@@@@@@@@@@@@@@@@@%
-//             %@###################@%
-//             %@#*****************#@%
-//             %@#*     TESTS     *#@%
-//             %@#*****************#@%
-//             %@###################@%
-//             %@@@@@@@@@@@@@@@@@@@@@%
-//             %%%%%%%%%%%%%%%%%%%%%%%
-// */
+/*
+            %%%%%%%%%%%%%%%%%%%%%%%
+            %@@@@@@@@@@@@@@@@@@@@@%
+            %@###################@%
+            %@#*****************#@%
+            %@#*     TESTS     *#@%
+            %@#*****************#@%
+            %@###################@%
+            %@@@@@@@@@@@@@@@@@@@@@%
+            %%%%%%%%%%%%%%%%%%%%%%%
+*/
 
 // /*
 // *   Example
