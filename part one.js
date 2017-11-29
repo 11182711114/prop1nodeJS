@@ -42,7 +42,7 @@ var myObject = {
         }
     },
     // Add prototype to called, replaces all previous inheritence.
-    addPrototype: function(prototype) { 
+    addPrototype: function(prototype) {
         if (!this.checkObjectExistsInPrototypesChain(prototype)) {
             let currentPrototypeLevel = this; 
             for (let proto = currentPrototypeLevel.__proto__; proto.__proto__.__proto__ != null; proto = proto.__proto__) {
@@ -170,7 +170,7 @@ obj2.ident = 2;
 obj3 = myObject.create([]);
 obj3.ident = 3;
 try {
-    obj0.addPrototype(obj3);
+    obj2.addPrototype(obj3);
     console.log("\tadded prototype");
 } catch (error) {
     console.log("\tdetected circular prototype logic");
