@@ -15,7 +15,7 @@ var createClass = function(className, superClassList) {
     };
 
     superClassLis.forEach(function(prototype, index, array) {
-        superClasses.push(prototype);
+        newClass.superClasses.push(prototype);
     }, this);
     newClass.__proto__ = superDuperClass;
     return newClass;
