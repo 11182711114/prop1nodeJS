@@ -1,3 +1,5 @@
+// Fredrik Larsson frla9839, Louise Flinta loflXXXX
+
 var myObject = {
     create: function(prototypeList) {
         let newObj = {};

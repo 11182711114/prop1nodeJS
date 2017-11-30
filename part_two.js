@@ -1,3 +1,4 @@
+// Fredrik Larsson frla9839, Louise Flinta loflXXXX
 
 var superDuperClass = {
     call: function(funcName, param) {
