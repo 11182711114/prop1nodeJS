@@ -4,32 +4,19 @@ var superDuperClass = {
         if (this.hasOwnProperty(funcName))
             return this[funcName].apply(this, param);
 
-        // Fix return -> tail recursion should not be necessary since the return value
-        // is not dependent on the previous stack windows which means that they
-        // should not be saved by the compiler????
-        let result = null;
-        result = this.__proto__.callTail(funcName, param);
+        // Fix return? -> tail recursion should not be necessary since the return value
+        // is not dependent on the previous stack windows(except branch points, i.e. classes with multiple super-classes)
+        // which means that they should not be saved on the stack?
+        let result = this.__proto__.callInClass(funcName, param);
         return result;
-
-        // let instanceClass = this.__proto__;
-        // let result;
-        // if (instanceClass.hasOwnProperty(funcName))
-        //     result = curClass[funcName].apply(this, parameters);
-        // else {
-        //     superClasses.forEach(function(superClass) {
-        //         superClass.callTail(funcName,param, result)
-        //         if (result != null)
-        //             break;
-        //     })
-        // }
-        // return result;
     },
-    callTail: function(funcName, param) {
+    callInClass: function(funcName, param) {
         if (this.hasOwnProperty(funcName)) {
            return this[funcName].apply(this, param);
         } else {
             // Cannot break out of forEach since we are breaking the function which the forEach is calling
             // and not the forEach itself
+            // same applies to return, it simply returns for the function given to forEach
             // this.superClasses.forEach(function(superClass) {
             //     result = superClass.callTail(funcName, param, result);
             //     if (result != null)
@@ -37,7 +24,7 @@ var superDuperClass = {
             // }, this);
             for(let i = 0; i < this.superClasses.length; i++) {
                 let superClass = this.superClasses[i];
-                result = superClass.callTail(funcName, param, result);
+                result = superClass.callInClass(funcName, param, result);
                 if (result != null)
                     return result;
             }
@@ -60,9 +47,8 @@ var createClass = function(className, superClassList) {
         } 
     };
 
-    // superClassList.forEach(function(prototype, index, array) {
-    //     newClass.superClasses.push(prototype);
-    // }, this);
+    // Does not handle null values inside the superClassList array, 
+    // if they should be allowed then this needs to iterate through the list and add them manually
     if (superClassList != null)
         newClass.superClasses = superClassList;
 
