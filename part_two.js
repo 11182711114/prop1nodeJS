@@ -130,3 +130,17 @@ try {
 } catch (error) {
     console.log("\tDetected circular inheritence logic");
 }
+
+console.log("should print ’Detected circular inheritence logic’");
+// More complex circular inheritence
+var class0 = createClass("Class 0", null);
+var class1 = createClass("Class 1", [class0]);
+var class2 = createClass("Class2",[]);
+var class3 = createClass("Class3", [class2]);
+var class4 = createClass("Class4", [class3,class0]);
+try {
+    class0.addSuperClass(class4);
+    console.log("\tFailed to detect circular inheritence");
+} catch (error) {
+    console.log("\tDetected circular inheritence logic");
+}
