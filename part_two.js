@@ -27,7 +27,7 @@ var superDuperClass = {
             */
             for(let i = 0; i < this.superClasses.length; i++) {
                 let superClass = this.superClasses[i];
-                result = superClass.callInClass(funcName, param, result);
+                result = superClass.callInClass(funcName, param);
                 if (result != null)
                     return result;
             }
