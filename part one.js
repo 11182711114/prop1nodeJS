@@ -3,7 +3,10 @@
 var myObject = {
     create: function(prototypeList) {
         let newObj = {};
-        // myObject should be the top prototype (bar the default one, which is myObjects prototype) so we inherit the functions from this
+        // myObject (or the instance with myObject (and others) as proto) should be the top prototype 
+        //  (bar the default one, which is myObjects prototype) so we inherit the functions from this
+        //      if create is called on an instance of an object created by myObject the created 
+        //          object will inherit that objects prototype chain
         newObj.__proto__ = this;
 
         if (prototypeList == null)
@@ -13,17 +16,18 @@ var myObject = {
         prototypeList.forEach(function(prototype, index, array) {
             if (prototype != null) {
 
-                // if the currentPrototype in the iteration has one(or more) prototype(s) that is not this(myObject) i.e. it has a prototype chain of its own 
+                // if the currentPrototype in the iteration has one(or more) prototype(s) that is not this(myObject) 
+                //  i.e. it has a prototype chain of its own 
                 if (currentPrototypeLevel.__proto__ != this) {
 
-                    //iterate through the prototypes and add the them at the top of the chain to give them "lowest priority" lookup
-                    // note: stops on the object before default __proto__ (i.e. proto.__proto__ != null)
+                    // iterate through the prototypes and add the them at the top of the chain to give them "lowest priority" lookup
+                    //  note: stops on the object before default __proto__ (i.e. proto.__proto__ != null)
                     for (let proto = currentPrototypeLevel.__proto__; proto != this; proto = proto.__proto__) {
                         currentPrototypeLevel = proto;
                     }
 
                 // if the object does not have other prototypes just add prototype from prototypeList.forEach as __proto__ 
-                // and set currentPrototypeLevel to prototype to advance in the chain
+                //  and set currentPrototypeLevel to prototype to advance in the chain
                 }                
                 currentPrototypeLevel.__proto__ = prototype;
                 currentPrototypeLevel = prototype;
@@ -31,7 +35,7 @@ var myObject = {
         }, this);
 
         // Add this to the topmost prototype before default proto to inherit functions
-        // currentPrototypeLevel.__proto__ = this;
+        //  currentPrototypeLevel.__proto__ = this;
         return newObj;
     },
     call: function(funcName, parameters) {
@@ -124,12 +128,31 @@ obj2.ident = 2;
 obj3 = myObject.create([obj1,obj2]);
 obj3.ident = 3;
 
-result = "should print: ’3 1 0 2’ ->";
+result = "should print: ’3 1 0 2 undefined’ ->";
 for (let obj = obj3; obj.__proto__ != null; obj = obj.__proto__) {
     result += " " + obj.ident;
 }
 console.log(result);
  
+/*
+* Check adds all correct when created by an instance
+*/
+obj0 = myObject.create(null);
+obj0.ident = 0;
+obj1 = myObject.create([obj0]);
+obj1.ident = 1;
+obj2 = myObject.create([null]);
+obj2.ident = 2;
+obj3 = myObject.create([obj1,obj2]);
+obj3.ident = 3;
+
+obj4 = obj3.create([]);
+obj4.ident = 4;
+result = "should print: ’4 3 1 0 2 undefined’ ->";
+for (let obj = obj4; obj.__proto__ != null; obj = obj.__proto__) {
+    result += " " + obj.ident;
+}
+console.log(result);
 
 /*
 * Preventing circular inheritance
