@@ -1,4 +1,4 @@
-// Fredrik Larsson frla9839, Louise Flinta loflXXXX
+// Fredrik Larsson frla9839, Louise Flinta lofl8323
 
 var myObject = {
     create: function(prototypeList) {

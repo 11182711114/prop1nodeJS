@@ -1,4 +1,4 @@
-// Fredrik Larsson frla9839, Louise Flinta loflXXXX
+// Fredrik Larsson frla9839, Louise Flinta lofl8323
 
 var superDuperClass = {
     //  call handles call functionality within the instances of objects and hands over the class functionality to callInClass
@@ -9,6 +9,8 @@ var superDuperClass = {
         //  Fix return? -> tail recursion should not be necessary since the return value
         //      is not dependent on the previous stack windows(except branch points, i.e. classes with multiple super-classes)
         //          which means that they should not be saved on the stack?
+        //  either way even if we save all stack windows it should not get excessive, and if it does become excessive there is probably
+        //      more things wrong in the inheritance model rather than an issue for this logic
         let result = this.__proto__.callInClass(funcName, param);
         return result;
     },
@@ -17,6 +19,14 @@ var superDuperClass = {
         if (this.hasOwnProperty(funcName)) {
            return this[funcName].apply(this, param);
         } else {
+            // iterate through superClasses and recursivly check, 
+            //  goes through the inheritance structure left -> right depth first
+            //  if several classes has the same function only the first occuring in the 
+            //      inheritance structure will ever be executed.
+            //   HOWEVER if the first occuring function returns null (for whatever reason) 
+            //      we will continue to search for another function
+            //          if we want to prevent this we could use some form of enum-like object 
+            //              for checking if the function has been found
             for (let i = 0; i < this.superClasses.length; i++) {
                 let superClass = this.superClasses[i];
                 result = superClass.callInClass(funcName, param);
@@ -24,6 +34,7 @@ var superDuperClass = {
                     return result;
             }
         }
+        // default
         return null;
     },
     addSuperClass: function(superClass) {
