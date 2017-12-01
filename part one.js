@@ -3,11 +3,11 @@
 var myObject = {
     create: function(prototypeList) {
         let newObj = {};
+        // myObject should be the top prototype (bar the default one, which is myObjects prototype) so we inherit the functions from this
         newObj.__proto__ = this;
 
-        if (prototypeList == null) {
+        if (prototypeList == null)
             return newObj;
-        }
 
         let currentPrototypeLevel = newObj;
         prototypeList.forEach(function(prototype, index, array) {
@@ -34,7 +34,6 @@ var myObject = {
         // currentPrototypeLevel.__proto__ = this;
         return newObj;
     },
-    // Call overshadowing
     call: function(funcName, parameters) {
         // Iterate through the prototype chain starting from the called object until default proto is reached.
         for (let proto = this; proto.__proto__ != null; proto = proto.__proto__) {
@@ -43,7 +42,7 @@ var myObject = {
                 return proto[funcName].apply(this,parameters);
         }
     },
-    // Add prototype to called, replaces all previous inheritence.
+    // Add prototype to called, places it in the top spot before myObject.
     addPrototype: function(prototype) {
         if (!this.checkObjectExistsInPrototypesChain(prototype)) {
             let currentPrototypeLevel = this; 
